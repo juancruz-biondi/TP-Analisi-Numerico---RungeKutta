@@ -98,7 +98,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Sincronizar presets
+  // Sincronizar presets de forma instantánea y fluida
   const handleSelectPreset = (key) => {
     setActivePresetKey(key);
     const p = PRESET_EXERCISES[key];
@@ -108,6 +108,10 @@ export default function App() {
     setXf(p.xf);
     setH(p.h);
     setVariable(p.variable);
+    
+    // Calcula inmediatamente en local para que la transición sea instantánea
+    const instantData = computeLocalRK2(p.eq, p.x0, p.y0, p.xf, p.h);
+    setResultData(instantData);
   };
 
   const insertSymbol = (val) => {
@@ -743,7 +747,6 @@ export default function App() {
                     <div className="h-80 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <ScatterChart 
-                          key={`${equation}_${x0}_${y0}_${xf}_${h}_${resultData?.final_result}`} 
                           margin={{ top: 20, right: 25, bottom: 20, left: 15 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -753,6 +756,7 @@ export default function App() {
                             stroke="#64748b" 
                             tick={{ fontSize: 11 }} 
                             domain={xDomain} 
+                            allowDataOverflow={false}
                           />
                           <YAxis 
                             type="number" 
@@ -760,11 +764,12 @@ export default function App() {
                             stroke="#64748b" 
                             tick={{ fontSize: 11 }} 
                             domain={yDomain} 
+                            allowDataOverflow={false}
                           />
                           <ZAxis range={[70, 70]} />
                           <Tooltip content={<CustomTooltip />} />
                           
-                          {/* Curva teórica continua si existe solución analítica */}
+                          {/* Curva teórica continua animada */}
                           {smoothCurve.length > 0 && (
                             <Scatter 
                               name="Exacta" 
@@ -772,10 +777,13 @@ export default function App() {
                               line={{ stroke: '#64748b', strokeWidth: 2, strokeDasharray: '4 4' }} 
                               shape={() => null} 
                               legendType="none" 
+                              isAnimationActive={true}
+                              animationDuration={500}
+                              animationEasing="ease-out"
                             />
                           )}
 
-                          {/* Curva y puntos calculados por RK2 (siempre visibles para cualquier función) */}
+                          {/* Curva y puntos de RK2 con transición suave */}
                           <Scatter 
                             name="RK2" 
                             data={chartData} 
@@ -783,6 +791,9 @@ export default function App() {
                             fill="#38bdf8" 
                             stroke="#0284c7" 
                             strokeWidth={2} 
+                            isAnimationActive={true}
+                            animationDuration={500}
+                            animationEasing="ease-out"
                           />
                         </ScatterChart>
                       </ResponsiveContainer>
