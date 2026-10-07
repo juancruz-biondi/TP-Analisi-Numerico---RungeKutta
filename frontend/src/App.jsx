@@ -33,8 +33,7 @@ import MathText from './components/MathText';
 // Ejercicios oficiales del PDF de la cátedra UTN FRLP
 const PRESET_EXERCISES = {
   ej4_teorico: {
-    nombre: "Ejercicio Teórico (Pág. 15)",
-    tag: "y(1.3)",
+    nombre: "Ejercicio Teórico",
     eq: "2*x*y",
     eqLaTeX: "y' = 2xy",
     x0: 1.0,
@@ -49,7 +48,6 @@ const PRESET_EXERCISES = {
   },
   ej1a_practica: {
     nombre: "Práctica 2 - Ej. 1.a",
-    tag: "y(0.5)",
     eq: "-3*x**2*y",
     eqLaTeX: "y' = -3x^2y",
     x0: 0.0,
@@ -64,7 +62,6 @@ const PRESET_EXERCISES = {
   },
   ej1b_practica: {
     nombre: "Práctica 2 - Ej. 1.b",
-    tag: "y(0.5)",
     eq: "0.25*(1 + y**2)",
     eqLaTeX: "y' = \\frac{1}{4}(1 + y^2)",
     x0: 0.0,
@@ -79,7 +76,6 @@ const PRESET_EXERCISES = {
   },
   ej1c_practica: {
     nombre: "Práctica 2 - Ej. 1.c",
-    tag: "y(1.5)",
     eq: "2*x*y",
     eqLaTeX: "y' = 2xy",
     x0: 1.0,
@@ -321,7 +317,7 @@ export default function App() {
                 <span>Runge-Kutta 2º Orden</span>
                 <span className="text-xs font-normal text-cyan-400 font-mono">(Método del Punto Medio)</span>
               </h1>
-              <p className="text-xs text-slate-400">Modelos Numéricos & Cálculo Avanzado — UTN FRLP</p>
+              <p className="text-xs text-slate-400">Analisis Numerico — UTN</p>
             </div>
           </div>
 
@@ -334,7 +330,7 @@ export default function App() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Calculator className="w-4 h-4" /> Simulador & Auditoría
+              <Calculator className="w-4 h-4" /> Simulador
             </button>
             <button
               onClick={() => setActiveTab('fundamentos')}
@@ -354,7 +350,7 @@ export default function App() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <HelpCircle className="w-4 h-4" /> Ejercicios & Defensa
+              <HelpCircle className="w-4 h-4" /> Conclusión
             </button>
           </div>
         </div>
@@ -370,7 +366,7 @@ export default function App() {
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-2xl">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Ejercicios de la Cátedra:</span>
+                <span>Ejercicios:</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(PRESET_EXERCISES).map((key) => {
@@ -388,7 +384,6 @@ export default function App() {
                     >
                       <span className={`w-2 h-2 rounded-full ${isSel ? 'bg-cyan-400' : 'bg-slate-600'}`} />
                       <span>{p.nombre}</span>
-                      <span className="text-[10px] text-slate-500 font-mono">({p.tag})</span>
                     </button>
                   );
                 })}
@@ -624,7 +619,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Gráfica Curva Suave
+                      Gráfica
                     </button>
                     <button
                       onClick={() => setActiveSubTab('tabla')}
@@ -634,7 +629,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Auditoría Paso a Paso
+                      Paso a Paso
                     </button>
                     <button
                       onClick={() => setActiveSubTab('deduccion')}
@@ -644,7 +639,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Deducción Oficial de Cátedra
+                      Deducción
                     </button>
                   </div>
 
@@ -869,7 +864,7 @@ export default function App() {
 
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <h3 className="text-lg font-bold text-white">
-                Comparativa Crítica: ¿Por qué Runge-Kutta supera a sus rivales?
+                Comparativa Crítica: ¿Por qué Runge-Kutta supera otros métodos?
               </h3>
 
               <div className="overflow-x-auto border border-slate-800 rounded-xl">
@@ -918,15 +913,9 @@ export default function App() {
         {activeTab === 'defensa' && (
           <div className="space-y-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
-                Preguntas Clave para el Coloquio / Examen Oral
-              </span>
               <h2 className="text-2xl font-bold text-white">
-                Defensa Técnica frente al Tribunal Docente
+                Preguntas Interesantes
               </h2>
-              <p className="text-slate-300 text-sm">
-                Respuestas exactas con el vocabulario técnico que evalúan en la cátedra de Modelos Numéricos UTN La Plata:
-              </p>
 
               <div className="space-y-4 pt-2">
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
@@ -974,7 +963,7 @@ export default function App() {
       </main>
 
       <footer className="border-t border-slate-800/80 py-4 text-center text-xs font-mono text-slate-500">
-        Cátedra de Modelos Numéricos & Cálculo Avanzado · UTN Facultad Regional La Plata
+        Analisis Numerico · UTN Facultad Regional La Plata
       </footer>
     </div>
   );
