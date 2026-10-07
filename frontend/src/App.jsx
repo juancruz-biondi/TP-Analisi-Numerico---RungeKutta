@@ -20,21 +20,21 @@ import {
   ChevronUp 
 } from 'lucide-react';
 import { 
-  ScatterChart, 
-  Scatter, 
+  LineChart, 
+  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer, 
-  ZAxis 
+  ResponsiveContainer 
 } from 'recharts';
 import MathText from './components/MathText';
 
-// Ejercicios oficiales del apunte UTN FRLP
+// Ejercicios oficiales del PDF de la cátedra UTN FRLP
 const PRESET_EXERCISES = {
   ej4_teorico: {
-    nombre: "Ejercicio 4",
+    nombre: "Ejercicio Teórico (Pág. 15)",
+    tag: "y(1.3)",
     eq: "2*x*y",
     eqLaTeX: "y' = 2xy",
     x0: 1.0,
@@ -44,11 +44,12 @@ const PRESET_EXERCISES = {
     variable: "x",
     solucionExacta: (x) => Math.exp(x * x - 1),
     eqExactaLaTeX: "y(x) = e^{x^2 - 1}",
-    descripcion: "Demostración oficial de 3 iteraciones que utiliza el profesor Amiconi en el apunte.",
+    descripcion: "Demostración de 3 iteraciones que utiliza el profesor Amiconi en el apunte.",
     color: "#38bdf8"
   },
   ej1a_practica: {
-    nombre: "Práctica 2 - Ejercicio 1.a",
+    nombre: "Práctica 2 - Ej. 1.a",
+    tag: "y(0.5)",
     eq: "-3*x**2*y",
     eqLaTeX: "y' = -3x^2y",
     x0: 0.0,
@@ -62,7 +63,8 @@ const PRESET_EXERCISES = {
     color: "#f59e0b"
   },
   ej1b_practica: {
-    nombre: "Práctica 2 - Ejercicio 1.b",
+    nombre: "Práctica 2 - Ej. 1.b",
+    tag: "y(0.5)",
     eq: "0.25*(1 + y**2)",
     eqLaTeX: "y' = \\frac{1}{4}(1 + y^2)",
     x0: 0.0,
@@ -72,8 +74,23 @@ const PRESET_EXERCISES = {
     variable: "x",
     solucionExacta: (x) => Math.tan(0.25 * x + Math.PI / 4),
     eqExactaLaTeX: "y(x) = \\tan\\left(\\frac{x}{4} + \\frac{\\pi}{4}\\right)",
-    descripcion: "Ecuación cuadrática en y. Demuestra la ventaja de RK2 sobre Taylor al no requerir derivar implícitamente.",
+    descripcion: "Ecuación no lineal autónoma. Demuestra la ventaja de RK2 sobre Taylor al no requerir derivar implícitamente.",
     color: "#a855f7"
+  },
+  ej1c_practica: {
+    nombre: "Práctica 2 - Ej. 1.c",
+    tag: "y(1.5)",
+    eq: "2*x*y",
+    eqLaTeX: "y' = 2xy",
+    x0: 1.0,
+    y0: 1.0,
+    xf: 1.5,
+    h: 0.1,
+    variable: "x",
+    solucionExacta: (x) => Math.exp(x * x - 1),
+    eqExactaLaTeX: "y(x) = e^{x^2 - 1}",
+    descripcion: "Inciso 1.c del PDF práctico. Resuelve la ecuación hasta x = 1.5 (5 iteraciones completas).",
+    color: "#10b981"
   }
 };
 
@@ -98,62 +115,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Sincronizar presets de forma instantánea y fluida
-  const handleSelectPreset = (key) => {
-    setActivePresetKey(key);
-    const p = PRESET_EXERCISES[key];
-    setEquation(p.eq);
-    setX0(p.x0);
-    setY0(p.y0);
-    setXf(p.xf);
-    setH(p.h);
-    setVariable(p.variable);
-    
-    // Calcula inmediatamente en local para que la transición sea instantánea
-    const instantData = computeLocalRK2(p.eq, p.x0, p.y0, p.xf, p.h);
-    setResultData(instantData);
-  };
-
-  const insertSymbol = (val) => {
-    setEquation((prev) => prev + val);
-    if (inputRef.current) inputRef.current.focus();
-  };
-
-  const clearEquation = () => {
-    setEquation('');
-    if (inputRef.current) inputRef.current.focus();
-  };
-
-  const backspaceEquation = () => {
-    setEquation((prev) => prev.slice(0, -1));
-    if (inputRef.current) inputRef.current.focus();
-  };
-
-  // Sanitizador con multiplicación implícita automática (soporta 2x, 3y, etc.)
-  const sanitizeEquation = (raw) => {
-    return raw
-      .replace(/sen\(/gi, 'sin(')
-      .replace(/\^/g, '**')
-      .replace(/(\d)([a-zA-Z(])/g, '$1*$2')
-      .replace(/([a-zA-Z)])(\d)/g, '$1*$2')
-      .replace(/(\))([a-zA-Z(])/g, '$1*$2');
-  };
-
-  // Vista previa LaTeX dinámica
-  const previewLatex = useMemo(() => {
-    if (!equation.trim()) return "y' = 0";
-    let formatted = equation
-      .replace(/\*\*/g, '^')
-      .replace(/\*/g, ' \\cdot ')
-      .replace(/sin\(/g, '\\operatorname{sen}(')
-      .replace(/cos\(/g, '\\cos(')
-      .replace(/tan\(/g, '\\tan(')
-      .replace(/exp\(([^)]+)\)/g, 'e^{$1}')
-      .replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}');
-    return `y' = ${formatted}`;
-  }, [equation]);
-
-  // Solver local de contingencia
+  // Solver local instantáneo
   function computeLocalRK2(eqStr, startX, startY, endX, stepH) {
     const fn = (xVal, yVal) => {
       if (eqStr.includes('2*x*y') || eqStr.includes('2xy')) return 2 * xVal * yVal;
@@ -208,46 +170,60 @@ export default function App() {
     };
   }
 
-  // Ejecución de cálculo
-  const executeSolve = async (eqInput, startX, startY, endX, stepSize) => {
-    setLoading(true);
-    setErrorMsg('');
-    const cleanEq = sanitizeEquation(eqInput);
-
-    try {
-      const response = await fetch('http://localhost:8000/solve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          equation: cleanEq,
-          x0: startX,
-          y0: startY,
-          xf: endX,
-          h: stepSize,
-          variable
-        })
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || 'Error en el cálculo');
-      }
-
-      const data = await response.json();
-      setResultData(data);
-    } catch (err) {
-      try {
-        const localData = computeLocalRK2(cleanEq, startX, startY, endX, stepSize);
-        setResultData(localData);
-      } catch (localErr) {
-        setErrorMsg('Error al evaluar: ' + err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
+  // Sincronizar presets de forma instantánea
+  const handleSelectPreset = (key) => {
+    setActivePresetKey(key);
+    const p = PRESET_EXERCISES[key];
+    setEquation(p.eq);
+    setX0(p.x0);
+    setY0(p.y0);
+    setXf(p.xf);
+    setH(p.h);
+    setVariable(p.variable);
+    
+    // Cálculo instantáneo para máxima fluidez
+    const instantData = computeLocalRK2(p.eq, p.x0, p.y0, p.xf, p.h);
+    setResultData(instantData);
   };
 
-  // RECÁLCULO AUTOMÁTICO EN TIEMPO REAL CUANDO SE MODIFICA CUALQUIER PUNTO
+  const insertSymbol = (val) => {
+    setEquation((prev) => prev + val);
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  const clearEquation = () => {
+    setEquation('');
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  const backspaceEquation = () => {
+    setEquation((prev) => prev.slice(0, -1));
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  const sanitizeEquation = (raw) => {
+    return raw
+      .replace(/sen\(/gi, 'sin(')
+      .replace(/\^/g, '**')
+      .replace(/(\d)([a-zA-Z(])/g, '$1*$2')
+      .replace(/([a-zA-Z)])(\d)/g, '$1*$2')
+      .replace(/(\))([a-zA-Z(])/g, '$1*$2');
+  };
+
+  const previewLatex = useMemo(() => {
+    if (!equation.trim()) return "y' = 0";
+    let formatted = equation
+      .replace(/\*\*/g, '^')
+      .replace(/\*/g, ' \\cdot ')
+      .replace(/sin\(/g, '\\operatorname{sen}(')
+      .replace(/cos\(/g, '\\cos(')
+      .replace(/tan\(/g, '\\tan(')
+      .replace(/exp\(([^)]+)\)/g, 'e^{$1}')
+      .replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}');
+    return `y' = ${formatted}`;
+  }, [equation]);
+
+  // Recálculo reactivo cuando se modifican parámetros
   useEffect(() => {
     const numX0 = parseFloat(x0);
     const numY0 = parseFloat(y0);
@@ -263,19 +239,24 @@ export default function App() {
       numXf > numX0 &&
       equation.trim().length > 0
     ) {
-      const timer = setTimeout(() => {
-        executeSolve(equation, numX0, numY0, numXf, numH);
-      }, 150); // 150 ms para que responda al instante mientras tipeás
-      return () => clearTimeout(timer);
+      const cleanEq = sanitizeEquation(equation);
+      try {
+        const localData = computeLocalRK2(cleanEq, numX0, numY0, numXf, numH);
+        setResultData(localData);
+        setErrorMsg('');
+      } catch (err) {
+        setErrorMsg('Error al evaluar: ' + err.message);
+      }
     }
   }, [equation, x0, y0, xf, h]);
 
-  // Si la ecuación actual coincide con el preset, usamos su solución analítica
+  // Chequeo de solución analítica
   const hasExactSolution = useMemo(() => {
-    return equation.trim() === currentPreset.eq.trim() && currentPreset.solucionExacta;
+    return (equation.includes('2*x*y') || equation.includes('-3*x**2*y') || equation.includes('0.25*(1 + y**2)')) 
+      && currentPreset.solucionExacta;
   }, [equation, currentPreset]);
 
-  // Puntos calculados por RK2 con comparación analítica si existe
+  // Datos para el gráfico
   const chartData = useMemo(() => {
     if (!resultData?.iterations) return [];
     return resultData.iterations.map(step => {
@@ -289,53 +270,6 @@ export default function App() {
     });
   }, [resultData, hasExactSolution, currentPreset]);
 
-  // Curva analítica teórica (solo si la ecuación es el preset oficial)
-  const smoothCurve = useMemo(() => {
-    if (!chartData.length || !hasExactSolution) return [];
-    const minX = chartData[0].xn;
-    const maxX = chartData[chartData.length - 1].xn;
-    const points = [];
-    const count = 60;
-    for (let i = 0; i <= count; i++) {
-      const cur = minX + (i / count) * (maxX - minX);
-      const yVal = currentPreset.solucionExacta(cur);
-      if (!isNaN(yVal) && isFinite(yVal)) {
-        points.push({
-          xn: Number(cur.toFixed(4)),
-          yn: Number(yVal.toFixed(6)),
-          isCurve: true
-        });
-      }
-    }
-    return points;
-  }, [chartData, hasExactSolution, currentPreset]);
-
-  // CÁLCULO DE DOMINIOS DINÁMICOS CON PADDING (SE ADAPTA AUTOMÁTICAMENTE A LOS NUEVOS PUNTOS)
-  const { xDomain, yDomain } = useMemo(() => {
-    if (!chartData.length) return { xDomain: ['auto', 'auto'], yDomain: ['auto', 'auto'] };
-
-    const allX = chartData.map(d => d.xn);
-    const minX = Math.min(...allX);
-    const maxX = Math.max(...allX);
-    const spanX = (maxX - minX) || 1;
-    const padX = spanX * 0.08;
-
-    const allY = [...chartData.map(d => d.yn), ...smoothCurve.map(d => d.yn)]
-      .filter(v => v !== null && !isNaN(v) && isFinite(v));
-
-    if (!allY.length) return { xDomain: ['auto', 'auto'], yDomain: ['auto', 'auto'] };
-
-    const minY = Math.min(...allY);
-    const maxY = Math.max(...allY);
-    const spanY = (maxY - minY) || 1;
-    const padY = spanY * 0.12;
-
-    return {
-      xDomain: [Number((minX - padX).toFixed(3)), Number((maxX + padX).toFixed(3))],
-      yDomain: [Number((minY - padY).toFixed(3)), Number((maxY + padY).toFixed(3))]
-    };
-  }, [chartData, smoothCurve]);
-
   const finalExact = (hasExactSolution && currentPreset.solucionExacta) 
     ? currentPreset.solucionExacta(parseFloat(xf)) 
     : null;
@@ -344,16 +278,14 @@ export default function App() {
     ? Math.abs(finalExact - resultData.final_result).toFixed(6) 
     : 'N/A';
 
-  const CustomTooltip = ({ active, payload }) => {
+  // Tooltip
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      if (data.isCurve) return null;
-
       return (
         <div className="bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-2xl text-xs font-mono backdrop-blur">
-          <p className="text-cyan-400 font-bold mb-1">Iteración n = {data.n}</p>
+          <p className="text-cyan-400 font-bold mb-1">Paso n = {data.n} (x = {data.xn})</p>
           <div className="space-y-1 text-slate-300">
-            <p><span className="text-slate-500">{variable}:</span> {data.xn}</p>
             <p><span className="text-slate-500">y (RK2):</span> <strong className="text-white">{data.yn}</strong></p>
             {data.exactVal !== null && (
               <div className="pt-1 mt-1 border-t border-slate-800">
@@ -389,7 +321,7 @@ export default function App() {
                 <span>Runge-Kutta 2º Orden</span>
                 <span className="text-xs font-normal text-cyan-400 font-mono">(Método del Punto Medio)</span>
               </h1>
-              <p className="text-xs text-slate-400">Analisis Numerico — UTN</p>
+              <p className="text-xs text-slate-400">Modelos Numéricos & Cálculo Avanzado — UTN FRLP</p>
             </div>
           </div>
 
@@ -402,7 +334,7 @@ export default function App() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Calculator className="w-4 h-4" /> Simulador
+              <Calculator className="w-4 h-4" /> Simulador & Auditoría
             </button>
             <button
               onClick={() => setActiveTab('fundamentos')}
@@ -422,7 +354,7 @@ export default function App() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <HelpCircle className="w-4 h-4" /> Conclusión
+              <HelpCircle className="w-4 h-4" /> Ejercicios & Defensa
             </button>
           </div>
         </div>
@@ -434,11 +366,11 @@ export default function App() {
         {activeTab === 'simulador' && (
           <div className="space-y-6">
             
-            {/* SELECTOR DE EJERCICIOS DEL APUNTE */}
+            {/* SELECTOR DE EJERCICIOS CON LOS 4 DEL PDF */}
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-2xl">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Ejercicios del Apunte:</span>
+                <span>Ejercicios de la Cátedra:</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(PRESET_EXERCISES).map((key) => {
@@ -456,6 +388,7 @@ export default function App() {
                     >
                       <span className={`w-2 h-2 rounded-full ${isSel ? 'bg-cyan-400' : 'bg-slate-600'}`} />
                       <span>{p.nombre}</span>
+                      <span className="text-[10px] text-slate-500 font-mono">({p.tag})</span>
                     </button>
                   );
                 })}
@@ -516,7 +449,7 @@ export default function App() {
             {/* SECCIÓN PRINCIPAL */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
-              {/* PANEL IZQUIERDO: FORMULARIO REACTIVO */}
+              {/* PANEL IZQUIERDO */}
               <div className="lg:col-span-5 space-y-4">
                 <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
                   
@@ -536,7 +469,6 @@ export default function App() {
                   </div>
 
                   <div className="space-y-3.5">
-                    {/* Input de Ecuación con Vista Previa en Vivo */}
                     <div>
                       <div className="flex justify-between items-center mb-1">
                         <label className="text-xs font-medium text-slate-300">
@@ -656,6 +588,7 @@ export default function App() {
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                      <span>✓ Actualización reactiva fluida</span>
                       {loading && <span className="text-cyan-400 font-mono animate-pulse">Calculando...</span>}
                     </div>
                   </div>
@@ -673,12 +606,12 @@ export default function App() {
                     <span>Detalle del Problema</span>
                   </div>
                   <p className="text-slate-400 leading-relaxed">
-                    Al modificar cualquier punto o valor inicial, el algoritmo resuelve el nuevo intervalo y la gráfica se reajusta automáticamente para encuadrar la solución.
+                    Al modificar cualquier parámetro, la curva spline de Recharts se interpola suavemente entre los nuevos puntos sin saltos ni tirones.
                   </p>
                 </div>
               </div>
 
-              {/* PANEL DERECHO: GRÁFICA REACTIVA Y SUB-TABS */}
+              {/* PANEL DERECHO: GRÁFICA FLUIDA CON LINECHART */}
               <div className="lg:col-span-7 space-y-4">
                 
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
@@ -691,7 +624,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Gráfica
+                      Gráfica Curva Suave
                     </button>
                     <button
                       onClick={() => setActiveSubTab('tabla')}
@@ -701,7 +634,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Paso a Paso
+                      Auditoría Paso a Paso
                     </button>
                     <button
                       onClick={() => setActiveSubTab('deduccion')}
@@ -711,7 +644,7 @@ export default function App() {
                           : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      Deducción
+                      Deducción Oficial de Cátedra
                     </button>
                   </div>
 
@@ -720,7 +653,7 @@ export default function App() {
                   </span>
                 </div>
 
-                {/* GRÁFICA AUTO-ADAPTABLE */}
+                {/* GRÁFICA FLUIDA 100% CON LINECHART (COMPORTAMIENTO ORIGINAL) */}
                 {activeSubTab === 'graficos' && (
                   <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
                     <div className="flex items-center justify-between">
@@ -729,12 +662,12 @@ export default function App() {
                           <TrendingUp className="w-4 h-4 text-cyan-400" /> Curva de Solución Aproximada
                         </h3>
                         <p className="text-xs text-slate-400">
-                          La escala se ajusta automáticamente a los puntos <MathText math={`[${x0}, ${xf}]`} />.
+                          Interpolación suave tipo *monotone* adaptada a los puntos calculados.
                         </p>
                       </div>
                       <div className="flex items-center gap-3 text-xs font-mono">
                         <span className="flex items-center gap-1.5 text-slate-300">
-                          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" /> Trayectoria RK2
+                          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" /> Curva RK2
                         </span>
                         {hasExactSolution && (
                           <span className="flex items-center gap-1.5 text-slate-400">
@@ -746,56 +679,51 @@ export default function App() {
 
                     <div className="h-80 w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <ScatterChart 
-                          margin={{ top: 20, right: 25, bottom: 20, left: 15 }}
+                        <LineChart 
+                          data={chartData} 
+                          margin={{ top: 20, right: 25, bottom: 15, left: 10 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                           <XAxis 
-                            type="number" 
                             dataKey="xn" 
                             stroke="#64748b" 
                             tick={{ fontSize: 11 }} 
-                            domain={xDomain} 
-                            allowDataOverflow={false}
                           />
                           <YAxis 
-                            type="number" 
-                            dataKey="yn" 
                             stroke="#64748b" 
                             tick={{ fontSize: 11 }} 
-                            domain={yDomain} 
-                            allowDataOverflow={false}
+                            domain={['auto', 'auto']} 
                           />
-                          <ZAxis range={[70, 70]} />
                           <Tooltip content={<CustomTooltip />} />
                           
-                          {/* Curva teórica continua animada */}
-                          {smoothCurve.length > 0 && (
-                            <Scatter 
-                              name="Exacta" 
-                              data={smoothCurve} 
-                              line={{ stroke: '#64748b', strokeWidth: 2, strokeDasharray: '4 4' }} 
-                              shape={() => null} 
-                              legendType="none" 
+                          {/* Línea analítica discontinua si existe */}
+                          {hasExactSolution && (
+                            <Line 
+                              type="monotone" 
+                              dataKey="exactVal" 
+                              stroke="#64748b" 
+                              strokeDasharray="4 4" 
+                              strokeWidth={2} 
+                              dot={false} 
+                              name="Solución Exacta" 
                               isAnimationActive={true}
-                              animationDuration={500}
-                              animationEasing="ease-out"
+                              animationDuration={400}
                             />
                           )}
 
-                          {/* Curva y puntos de RK2 con transición suave */}
-                          <Scatter 
-                            name="RK2" 
-                            data={chartData} 
-                            line={{ stroke: '#38bdf8', strokeWidth: 2.5 }} 
-                            fill="#38bdf8" 
-                            stroke="#0284c7" 
-                            strokeWidth={2} 
+                          {/* Línea principal RK2 con puntos elegantes */}
+                          <Line 
+                            type="monotone" 
+                            dataKey="yn" 
+                            stroke="#38bdf8" 
+                            strokeWidth={3} 
+                            dot={{ r: 5, fill: '#6366f1', stroke: '#38bdf8', strokeWidth: 2 }} 
+                            activeDot={{ r: 7, fill: '#38bdf8' }}
+                            name="y (RK2)" 
                             isAnimationActive={true}
-                            animationDuration={500}
-                            animationEasing="ease-out"
+                            animationDuration={400}
                           />
-                        </ScatterChart>
+                        </LineChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
@@ -848,9 +776,15 @@ export default function App() {
                 {activeSubTab === 'deduccion' && (
                   <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5 text-xs">
                     <div>
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+                        Procedimiento Exigido · Cátedra UTN FRLP
+                      </span>
                       <h3 className="text-base font-bold text-white mt-1">
                         Definición Formal de la "Ordenada Genérica" en Runge-Kutta 2
                       </h3>
+                      <p className="text-slate-400 mt-1">
+                        Fórmulas oficiales presentadas en la página 5 y 15 del apunte del Ing. Amiconi Diego Federico.
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -881,6 +815,13 @@ export default function App() {
                       </p>
                       <div className="text-base font-bold text-white py-1">
                         <MathText math="y_{n+1} = y_n + h \cdot f\left(x_n + \frac{h}{2} \;,\; y_n + \frac{k_1}{2}\right)" block />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-amber-950/50 rounded-xl border border-amber-800/80 text-amber-200 flex items-start gap-2.5">
+                      <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong>Instrucción Práctica de Cátedra:</strong> Para aplicar la fórmula en una prueba escrita, tomas la función diferencial del problema <MathText math="y' = f(x, y)" /> y reemplazas cada aparición de <MathText math="x" /> por <MathText math="\left(x_n + \frac{h}{2}\right)" /> y cada aparición de <MathText math="y" /> por <MathText math="\left(y_n + \frac{k_1}{2}\right)" />.
                       </div>
                     </div>
                   </div>
@@ -928,7 +869,7 @@ export default function App() {
 
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <h3 className="text-lg font-bold text-white">
-                Comparativa Crítica: ¿Por qué Runge-Kutta supera otros métodos?
+                Comparativa Crítica: ¿Por qué Runge-Kutta supera a sus rivales?
               </h3>
 
               <div className="overflow-x-auto border border-slate-800 rounded-xl">
@@ -939,7 +880,7 @@ export default function App() {
                       <th className="p-3">Orden de Error Local</th>
                       <th className="p-3">Cálculo Analítico</th>
                       <th className="p-3">Evaluaciones de f por paso</th>
-                      <th className="p-3">Evaluación Técnica</th>
+                      <th className="p-3">Evaluación Técnica de Cátedra</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/70">
@@ -947,7 +888,7 @@ export default function App() {
                       <td className="p-3 font-semibold text-slate-300">Euler Clásico</td>
                       <td className="p-3 font-mono text-slate-400"><MathText math="\mathcal{O}(h)" /> — Orden 1</td>
                       <td className="p-3 text-emerald-400 font-medium">Ninguno</td>
-                      <td className="p-3 font-mono">Evalua: <MathText math="f(x_n, y_n)" /> 1 sola vez</td>
+                      <td className="p-3 font-mono">1 cálculo: solo evalúa f al inicio</td>
                       <td className="p-3 text-slate-400">Muy bajo costo, pero error inadmisible en problemas de ingeniería con curvatura.</td>
                     </tr>
                     <tr className="hover:bg-slate-800/20">
@@ -956,14 +897,14 @@ export default function App() {
                       <td className="p-3 text-rose-400 font-medium">
                         Requiere <MathText math="y'' = \frac{\partial f}{\partial x} + \frac{\partial f}{\partial y}y'" />
                       </td>
-                      <td className="p-3 font-mono">Evalua: <MathText math="f(x_n, y_n)" /> y derivadas parciales</td>
+                      <td className="p-3 font-mono">Requiere calcular f y sus derivadas parciales</td>
                       <td className="p-3 text-slate-400">Excelente orden, pero calcular derivadas analíticas parciales es impráctico o imposible.</td>
                     </tr>
                     <tr className="bg-indigo-950/30 font-semibold border-l-2 border-indigo-500">
                       <td className="p-3 text-cyan-300">Runge-Kutta Grado 2</td>
                       <td className="p-3 font-mono text-emerald-400 font-bold"><MathText math="\mathcal{O}(h^2)" /> — Orden 2</td>
-                      <td className="p-3 text-emerald-400 font-bold">¡Sin derivadas analíticas!</td>
-                      <td className="p-3 font-mono text-cyan-300">Evalua f 2 veces: en <MathText math="(x_n, y_n)" /> y en el punto medio</td>
+                      <td className="p-3 text-emerald-400 font-bold">¡Cero derivadas analíticas!</td>
+                      <td className="p-3 font-mono text-cyan-300">2 cálculos: al inicio y en el punto medio</td>
                       <td className="p-3 text-slate-200">Gana en equilibrio: misma convergencia que Taylor 2 sin calcular derivadas.</td>
                     </tr>
                   </tbody>
@@ -977,9 +918,15 @@ export default function App() {
         {activeTab === 'defensa' && (
           <div className="space-y-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+                Preguntas Clave para el Coloquio / Examen Oral
+              </span>
               <h2 className="text-2xl font-bold text-white">
-                Preguntas Interesantes
+                Defensa Técnica frente al Tribunal Docente
               </h2>
+              <p className="text-slate-300 text-sm">
+                Respuestas exactas con el vocabulario técnico que evalúan en la cátedra de Modelos Numéricos UTN La Plata:
+              </p>
 
               <div className="space-y-4 pt-2">
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
@@ -988,7 +935,7 @@ export default function App() {
                     1. ¿Por qué Runge-Kutta es de "Paso Simple" y cómo se relaciona con los métodos de "Paso Múltiple"?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Es de <strong className="text-white font-semibold">Paso Simple (One-step)</strong> porque para obtener <MathText math="y_{n+1}" /> únicamente requiere la información del intervalo actual <MathText math="[x_n, x_{n+1}]" />. Por el contrario, los métodos de <strong className="text-white font-semibold">Paso Múltiple</strong> (como Adams-Bashforth) necesitan varios puntos previos (<MathText math="y_n, y_{n-1}, y_{n-2}" />). Por esa razón, <strong className="text-cyan-300 font-semibold">siempre se debe iniciar un problema con Runge-Kutta como "arrancador"</strong> para generar los primeros puntos que el paso múltiple no conoce inicialmente.
+                    Es de <strong className="text-white font-semibold">Paso Simple (One-step)</strong> porque para obtener <MathText math="y_{n+1}" /> únicamente requiere la información del intervalo actual <MathText math="[x_n, x_{n+1}]" />. Por el contrario, los métodos de <strong className="text-white font-semibold">Paso Múltiple</strong> (como Adams-Bashforth) necesitan varios puntos previos (<MathText math="y_n, y_{n-1}, y_{n-2}" />). Por esa razón, <strong className="text-cyan-300 font-semibold">siempre se debe iniciar un problema con Runge-Kutta como arrancador</strong> para generar los primeros puntos que el paso múltiple no conoce inicialmente.
                   </p>
                 </div>
 
@@ -998,17 +945,16 @@ export default function App() {
                     2. ¿Qué significado geométrico tiene evaluar en el punto medio?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Representa el <strong className="text-white font-semibold">Método del Punto Medio</strong>. Al dar medio paso hasta las coordenadas intermedias <MathText math="\left(x_n + \frac{h}{2}, \; y_n + \frac{k_1}{2}\right)" /> con la pendiente inicial, se muestrea la inclinación promedio en el centro del intervalo. Esto balancea la curvatura de la función y elimina el error de pendiente unilateral que tiene Euler clásico.
+                    Representa el <strong className="text-white font-semibold">Método del Punto Medio</strong>. Al dar medio paso hasta las coordenadas intermedias <MathText math="\left(x_n + \frac{h}{2}, \; y_n + \frac{k_1}{2}\right)" /> con la pendiente inicial, se muestrea la inclinación promedio en el centro del intervalo. Esto balancea la concavidad de la curva y elimina el error de pendiente unilateral que tiene Euler clásico.
                   </p>
                 </div>
 
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
                   <h4 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     3. ¿Qué implicancia práctica tiene que el error local sea O(h²)?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Significa que si se reduce el tamaño del paso a la mitad (por ejemplo de <MathText math="h = 0.1" /> a <MathText math="h = 0.05" />), el error de truncamiento local <strong className="text-emerald-400 font-semibold">se reduce a la cuarta parte</strong> (<MathText math="(1/2)^2 = 1/4" />). La velocidad de convergencia cuadrática permite alcanzar gran precisión con pasos considerablemente mayores que en Euler.
+                    Significa que si se reduce el tamaño del paso a la mitad (por ejemplo de <MathText math="h = 0.1" /> a <MathText math="h = 0.05" />), el error local se reduce a la cuarta parte (<MathText math="(1/2)^2 = 1/4" />). La velocidad de convergencia cuadrática permite alcanzar gran precisión con pasos considerablemente mayores que en Euler.
                   </p>
                 </div>
               </div>
@@ -1028,7 +974,7 @@ export default function App() {
       </main>
 
       <footer className="border-t border-slate-800/80 py-4 text-center text-xs font-mono text-slate-500">
-        Analisis Numerico · UTN Facultad Regional La Plata
+        Cátedra de Modelos Numéricos & Cálculo Avanzado · UTN Facultad Regional La Plata
       </footer>
     </div>
   );
