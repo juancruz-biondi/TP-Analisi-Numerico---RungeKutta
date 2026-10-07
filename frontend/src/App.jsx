@@ -771,15 +771,9 @@ export default function App() {
                 {activeSubTab === 'deduccion' && (
                   <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5 text-xs">
                     <div>
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
-                        Procedimiento Exigido · Cátedra UTN FRLP
-                      </span>
                       <h3 className="text-base font-bold text-white mt-1">
                         Definición Formal de la "Ordenada Genérica" en Runge-Kutta 2
                       </h3>
-                      <p className="text-slate-400 mt-1">
-                        Fórmulas oficiales presentadas en la página 5 y 15 del apunte del Ing. Amiconi Diego Federico.
-                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -810,13 +804,6 @@ export default function App() {
                       </p>
                       <div className="text-base font-bold text-white py-1">
                         <MathText math="y_{n+1} = y_n + h \cdot f\left(x_n + \frac{h}{2} \;,\; y_n + \frac{k_1}{2}\right)" block />
-                      </div>
-                    </div>
-
-                    <div className="p-3 bg-amber-950/50 rounded-xl border border-amber-800/80 text-amber-200 flex items-start gap-2.5">
-                      <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                        <strong>Instrucción Práctica de Cátedra:</strong> Para aplicar la fórmula en una prueba escrita, tomas la función diferencial del problema <MathText math="y' = f(x, y)" /> y reemplazas cada aparición de <MathText math="x" /> por <MathText math="\left(x_n + \frac{h}{2}\right)" /> y cada aparición de <MathText math="y" /> por <MathText math="\left(y_n + \frac{k_1}{2}\right)" />.
                       </div>
                     </div>
                   </div>
@@ -920,7 +907,6 @@ export default function App() {
               <div className="space-y-4 pt-2">
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
                   <h4 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     1. ¿Por qué Runge-Kutta es de "Paso Simple" y cómo se relaciona con los métodos de "Paso Múltiple"?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
@@ -930,7 +916,6 @@ export default function App() {
 
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
                   <h4 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     2. ¿Qué significado geométrico tiene evaluar en el punto medio?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
