@@ -583,7 +583,6 @@ export default function App() {
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                      <span>✓ Actualización reactiva fluida</span>
                       {loading && <span className="text-cyan-400 font-mono animate-pulse">Calculando...</span>}
                     </div>
                   </div>
@@ -598,10 +597,10 @@ export default function App() {
                 <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 text-xs space-y-2">
                   <div className="flex items-center gap-1.5 font-semibold text-slate-200">
                     <Info className="w-4 h-4 text-cyan-400" />
-                    <span>Detalle del Problema</span>
+                    <span>Detalle</span>
                   </div>
                   <p className="text-slate-400 leading-relaxed">
-                    Al modificar cualquier parámetro, la curva spline de Recharts se interpola suavemente entre los nuevos puntos sin saltos ni tirones.
+                    Al modificar cualquier valor, la curva se adapta dependiendo de los parametros que se hayan ingresado.
                   </p>
                 </div>
               </div>
@@ -656,9 +655,6 @@ export default function App() {
                         <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
                           <TrendingUp className="w-4 h-4 text-cyan-400" /> Curva de Solución Aproximada
                         </h3>
-                        <p className="text-xs text-slate-400">
-                          Interpolación suave tipo *monotone* adaptada a los puntos calculados.
-                        </p>
                       </div>
                       <div className="flex items-center gap-3 text-xs font-mono">
                         <span className="flex items-center gap-1.5 text-slate-300">
@@ -672,11 +668,11 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="h-80 w-full">
+                    <div className="h-[500px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart 
                           data={chartData} 
-                          margin={{ top: 20, right: 25, bottom: 15, left: 10 }}
+                          margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                           <XAxis 
@@ -688,6 +684,7 @@ export default function App() {
                             stroke="#64748b" 
                             tick={{ fontSize: 11 }} 
                             domain={['auto', 'auto']} 
+                            tickFormatter={(val) => Math.abs(val) >= 10000 || (Math.abs(val) < 0.001 && val !== 0) ? val.toExponential(1) : val}
                           />
                           <Tooltip content={<CustomTooltip />} />
                           
@@ -706,7 +703,7 @@ export default function App() {
                             />
                           )}
 
-                          {/* Línea principal RK2 con puntos elegantes */}
+                          {/* Línea principal RK2 */}
                           <Line 
                             type="monotone" 
                             dataKey="yn" 
@@ -729,7 +726,7 @@ export default function App() {
                   <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-xl overflow-x-auto space-y-3">
                     <div>
                       <h4 className="text-xs font-semibold text-slate-200">
-                        Tabla Numérica Desglosada con Fórmulas de Cátedra
+                        Tabla Numérica Desglosada
                       </h4>
                       <p className="text-[11px] text-slate-400">
                         Puntos intermedios y avance paso a paso para el intervalo configurado.
