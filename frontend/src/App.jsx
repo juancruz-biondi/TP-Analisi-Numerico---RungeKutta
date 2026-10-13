@@ -841,9 +841,9 @@ export default function App() {
                 <p className="text-slate-400 leading-relaxed">
                   En muchos problemas de ingeniería no se puede obtener fácilmente una solución analítica o fórmula cerrada de <MathText math="y(x)" />. El objetivo de los métodos numéricos no es hallar esa función continua, sino calcular una <strong className="text-slate-200">sucesión discreta de valores aproximados</strong>:
                 </p>
-                <p className="font-mono text-cyan-400 text-center py-1">
-                  y₁, y₂, y₃, ..., yₙ &nbsp;&nbsp;≈&nbsp;&nbsp; y(x₁), y(x₂), y(x₃), ..., y(xₙ)
-                </p>
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center font-mono text-cyan-300 text-base">
+                  <MathText math="y_1, \, y_2, \, y_3, \, \dots, \, y_n \approx y(x_1), \, y(x_2), \, y(x_3), \, \dots, \, y(x_n)" block />
+                </div>
                 <p className="text-slate-400">
                   Donde cada <MathText math="y_n" /> representa la aproximación numérica del valor verdadero en la abscisa <MathText math="x_n" />.
                 </p>
@@ -853,7 +853,7 @@ export default function App() {
             {/* BLOQUE 2: LOS 4 ELEMENTOS OBLIGATORIOS DEL P.V.I */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <h3 className="text-lg font-bold text-white">
-                Los 4 Elementos Necesarios para Resolver un P.V.I (según la cátedra)
+                Los 4 Elementos Necesarios para Resolver un P.V.I
               </h3>
               <p className="text-slate-300 text-xs">
                 Un Problema de Valor Inicial queda unívocamente determinado por cuatro componentes:
@@ -889,7 +889,7 @@ export default function App() {
                   <span className="text-cyan-300 font-bold ml-2">N = (x_f - x₀) / h</span>
                 </div>
                 <span className="text-[11px] text-slate-400">
-                  Ejemplo cátedra: [1.0 a 1.3] con h=0.1 ➔ N = (1.3 - 1.0)/0.1 = <strong>3 pasos</strong>
+                  Ejemplo: [1.0 a 1.3] con h=0.1 ➔ N = (1.3 - 1.0)/0.1 = <strong>3 pasos</strong>
                 </span>
               </div>
             </div>
@@ -899,16 +899,13 @@ export default function App() {
               <h3 className="text-lg font-bold text-white">
                 Clasificación de Algoritmos para la "Ordenada Genérica" yₙ₊₁
               </h3>
-              <p className="text-slate-300 text-xs">
-                El apunte oficial divide los algoritmos numéricos en dos grandes familias:
-              </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 {/* Paso Simple */}
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-cyan-300 text-sm">1. Algoritmos de Paso Simple (One-step)</h4>
+                    <h4 className="font-bold text-cyan-300 text-sm">1. Algoritmos de Paso Simple</h4>
                     <span className="text-[10px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded border border-cyan-800 font-mono">
                       Aquí entra RK2
                     </span>
@@ -919,14 +916,13 @@ export default function App() {
                   <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
                     <li>Utilizan valores de <MathText math="y_n" /> y de <MathText math="f(x_n, y_n)" /> en el punto actual o puntos intermedios.</li>
                     <li><strong className="text-slate-300">No necesitan</strong> información de pasos anteriores (<MathText math="y_{n-1}, y_{n-2}" />).</li>
-                    <li><strong className="text-slate-300">Ejemplos de cátedra:</strong> Euler, Euler Mejorado, Taylor y Runge-Kutta 2.</li>
                   </ul>
                 </div>
 
                 {/* Paso Múltiple */}
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-indigo-300 text-sm">2. Algoritmos de Paso Múltiple (Multi-step)</h4>
+                    <h4 className="font-bold text-indigo-300 text-sm">2. Algoritmos de Paso Múltiple</h4>
                     <span className="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded border border-indigo-800 font-mono">
                       Adams-Bashforth
                     </span>
@@ -937,41 +933,11 @@ export default function App() {
                   <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
                     <li>Necesitan conocer previamente los valores de <MathText math="y_n, y_{n-1}, y_{n-2}, \dots" /></li>
                     <li>Reutilizan evaluaciones anteriores para ahorrar costo computacional.</li>
-                    <li><strong className="text-slate-300">Ejemplo de cátedra:</strong> Método de Adams-Bashforth.</li>
                   </ul>
                 </div>
 
               </div>
-
-              {/* CARD DESTACADA: EL ROL COMO ARRANCADOR */}
-              <div className="p-4 bg-gradient-to-r from-indigo-950/70 to-slate-950 rounded-xl border border-indigo-800/80 text-xs text-slate-300 space-y-2">
-                <h4 className="font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
-                  El Rol Clave de Runge-Kutta como "Arrancador" de Métodos de Paso Múltiple
-                </h4>
-                <p className="leading-relaxed text-slate-300">
-                  Dado que al comienzo del problema <strong>solamente se conoce la ordenada inicial y₀</strong>, un algoritmo de paso múltiple no tiene la información previa requerida para empezar. Por lo tanto, según la cátedra, <strong className="text-cyan-300">debemos comenzar siempre el cálculo con un método de paso simple como Runge-Kutta</strong> hasta lograr juntar los primeros puntos necesarios para luego transferir el control al paso múltiple.
-                </p>
-              </div>
-
-              {/* ERRORES FRECUENTES AL PLANTEAR UN PVI */}
-              <div className="p-4 bg-slate-950/90 rounded-xl border border-slate-800 space-y-2 text-xs">
-                <h4 className="font-bold text-amber-300 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  Advertencias de Cátedra al plantear un P.V.I:
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-400">
-                  <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                    <strong className="text-slate-200">1. Confundir x₀ con cero:</strong> <MathText math="x_0" /> no siempre vale 0; se obtiene explícitamente de la condición <MathText math="y(x_0)=y_0" /> (ej: en <MathText math="y(1)=1" />, <MathText math="x_0=1" />).
-                  </div>
-                  <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                    <strong className="text-slate-200">2. No redondear pronto:</strong> Conservar 4 o más decimales durante las cuentas intermedias y redondear solo al final para no propagar error.
-                  </div>
-                </div>
-              </div>
-
             </div>
-
           </div>
         )}
 
@@ -982,15 +948,9 @@ export default function App() {
           <div className="space-y-6">
             
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
-                Preguntas Clave para el Coloquio / Examen Oral
-              </span>
               <h2 className="text-2xl font-bold text-white">
-                Defensa Técnica frente al Tribunal Docente
+                Preguntas interesantes
               </h2>
-              <p className="text-slate-300 text-sm">
-                Respuestas exactas con el vocabulario técnico que evalúan en la cátedra de Modelos Numéricos UTN La Plata:
-              </p>
 
               <div className="space-y-4 pt-2">
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
