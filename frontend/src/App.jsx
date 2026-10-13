@@ -812,94 +812,185 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 2: FUNDAMENTOS */}
+        {/* ========================================================
+            TAB 2: FUNDAMENTOS DEL P.V.I & CLASIFICACIÓN DE CÁTEDRA
+        ======================================================== */}
         {activeTab === 'fundamentos' && (
           <div className="space-y-6">
+            
+            {/* BLOQUE 1: DEFINICIÓN DE EDO Y SOLUCIÓN NUMÉRICA */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <span className="text-xs font-mono uppercase tracking-wider text-cyan-400 font-bold">
-                Marco Teórico · Problemas de Valor Inicial (P.V.I)
+                Marco Teórico · Ecuaciones Diferenciales Ordinarias (E.D.O.)
               </span>
               <h2 className="text-2xl font-bold text-white">
-                Los 4 Elementos Fundamentales de un P.V.I
+                ¿Qué es una E.D.O y qué se busca resolver numéricamente?
               </h2>
               <p className="text-slate-300 leading-relaxed text-sm">
-                En ingeniería la mayoría de las ecuaciones diferenciales no admiten solución analítica por integrales directas. Se definen cuatro componentes obligatorios para su resolución numérica:
+                Una ecuación diferencial ordinaria relaciona una función desconocida con sus derivadas:
               </p>
+              
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center font-mono text-cyan-300 text-base">
+                <MathText math="y' = f(x, y(x)) = \frac{dy}{dx}" block />
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 font-mono text-xs">
-                <div className="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[11px] mb-1">1. Ecuación Diferencial</span>
-                  <div className="font-bold text-white text-sm"><MathText math="y' = f(x, y)" /></div>
-                </div>
-                <div className="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[11px] mb-1">2. Condición Inicial</span>
-                  <div className="font-bold text-white text-sm"><MathText math="y(x_0) = y_0" /></div>
-                </div>
-                <div className="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[11px] mb-1">3. Dominio de Trabajo</span>
-                  <div className="font-bold text-white text-sm"><MathText math="x_0 \le x \le x_f" /></div>
-                </div>
-                <div className="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[11px] mb-1">4. Paso Discreto</span>
-                  <div className="font-bold text-white text-sm"><MathText math="h = x_{n+1} - x_n" /></div>
-                </div>
+              <div className="p-4 bg-slate-950/70 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                <p className="font-semibold text-white">
+                  ¿Qué significa obtener una "Solución Numérica"?
+                </p>
+                <p className="text-slate-400 leading-relaxed">
+                  En muchos problemas de ingeniería no se puede obtener fácilmente una solución analítica o fórmula cerrada de <MathText math="y(x)" />. El objetivo de los métodos numéricos no es hallar esa función continua, sino calcular una <strong className="text-slate-200">sucesión discreta de valores aproximados</strong>:
+                </p>
+                <p className="font-mono text-cyan-400 text-center py-1">
+                  y₁, y₂, y₃, ..., yₙ &nbsp;&nbsp;≈&nbsp;&nbsp; y(x₁), y(x₂), y(x₃), ..., y(xₙ)
+                </p>
+                <p className="text-slate-400">
+                  Donde cada <MathText math="y_n" /> representa la aproximación numérica del valor verdadero en la abscisa <MathText math="x_n" />.
+                </p>
               </div>
             </div>
 
+            {/* BLOQUE 2: LOS 4 ELEMENTOS OBLIGATORIOS DEL P.V.I */}
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
               <h3 className="text-lg font-bold text-white">
-                Comparativa Crítica: ¿Por qué Runge-Kutta supera otros métodos?
+                Los 4 Elementos Necesarios para Resolver un P.V.I (según la cátedra)
               </h3>
+              <p className="text-slate-300 text-xs">
+                Un Problema de Valor Inicial queda unívocamente determinado por cuatro componentes:
+              </p>
 
-              <div className="overflow-x-auto border border-slate-800 rounded-xl">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-400 font-mono text-[11px] uppercase border-b border-slate-800">
-                    <tr>
-                      <th className="p-3">Método Numérico</th>
-                      <th className="p-3">Orden de Error Local</th>
-                      <th className="p-3">Cálculo Analítico</th>
-                      <th className="p-3">Evaluaciones de f por paso</th>
-                      <th className="p-3">Evaluación Técnica de Cátedra</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/70">
-                    <tr className="hover:bg-slate-800/20">
-                      <td className="p-3 font-semibold text-slate-300">Euler Clásico</td>
-                      <td className="p-3 font-mono text-slate-400"><MathText math="\mathcal{O}(h)" /> — Orden 1</td>
-                      <td className="p-3 text-emerald-400 font-medium">Ninguno</td>
-                      <td className="p-3 font-mono">1 cálculo: solo evalúa f al inicio</td>
-                      <td className="p-3 text-slate-400">Muy bajo costo, pero error inadmisible en problemas de ingeniería con curvatura.</td>
-                    </tr>
-                    <tr className="hover:bg-slate-800/20">
-                      <td className="p-3 font-semibold text-indigo-300">Taylor Grado 2</td>
-                      <td className="p-3 font-mono text-emerald-400 font-bold"><MathText math="\mathcal{O}(h^2)" /> — Orden 2</td>
-                      <td className="p-3 text-rose-400 font-medium">
-                        Requiere <MathText math="y'' = \frac{\partial f}{\partial x} + \frac{\partial f}{\partial y}y'" />
-                      </td>
-                      <td className="p-3 font-mono">Requiere calcular f y sus derivadas parciales</td>
-                      <td className="p-3 text-slate-400">Excelente orden, pero calcular derivadas analíticas parciales es impráctico o imposible.</td>
-                    </tr>
-                    <tr className="bg-indigo-950/30 font-semibold border-l-2 border-indigo-500">
-                      <td className="p-3 text-cyan-300">Runge-Kutta Grado 2</td>
-                      <td className="p-3 font-mono text-emerald-400 font-bold"><MathText math="\mathcal{O}(h^2)" /> — Orden 2</td>
-                      <td className="p-3 text-emerald-400 font-bold">¡Cero derivadas analíticas!</td>
-                      <td className="p-3 font-mono text-cyan-300">2 cálculos: al inicio y en el punto medio</td>
-                      <td className="p-3 text-slate-200">Gana en equilibrio: misma convergencia que Taylor 2 sin calcular derivadas.</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1 font-mono text-xs">
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <span className="text-slate-500 block text-[11px] mb-1">1. Ecuación diferencial</span>
+                  <div className="font-bold text-white text-sm"><MathText math="y' = f(x, y)" /></div>
+                  <span className="text-[10px] text-slate-400 mt-1 block">Indica cómo varía la función</span>
+                </div>
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <span className="text-slate-500 block text-[11px] mb-1">2. Condición inicial</span>
+                  <div className="font-bold text-white text-sm"><MathText math="y(x_0) = y_0" /></div>
+                  <span className="text-[10px] text-slate-400 mt-1 block">Punto de partida conocido</span>
+                </div>
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <span className="text-slate-500 block text-[11px] mb-1">3. Dominio de trabajo</span>
+                  <div className="font-bold text-white text-sm"><MathText math="x_0 \le x \le x_f" /></div>
+                  <span className="text-[10px] text-slate-400 mt-1 block">Intervalo de integración</span>
+                </div>
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <span className="text-slate-500 block text-[11px] mb-1">4. Paso de avance (h)</span>
+                  <div className="font-bold text-white text-sm"><MathText math="x_{n+1} = x_n + h" /></div>
+                  <span className="text-[10px] text-slate-400 mt-1 block">Distancia entre iteraciones</span>
+                </div>
+              </div>
+
+              {/* FÓRMULA DE CANTIDAD DE ITERACIONES */}
+              <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                <div>
+                  <span className="text-slate-400">Cálculo de cantidad de iteraciones necesarias:</span>
+                  <span className="text-cyan-300 font-bold ml-2">N = (x_f - x₀) / h</span>
+                </div>
+                <span className="text-[11px] text-slate-400">
+                  Ejemplo cátedra: [1.0 a 1.3] con h=0.1 ➔ N = (1.3 - 1.0)/0.1 = <strong>3 pasos</strong>
+                </span>
               </div>
             </div>
+
+            {/* BLOQUE 3: PASO SIMPLE VS PASO MÚLTIPLE & EL ROL DE RK2 */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+              <h3 className="text-lg font-bold text-white">
+                Clasificación de Algoritmos para la "Ordenada Genérica" yₙ₊₁
+              </h3>
+              <p className="text-slate-300 text-xs">
+                El apunte oficial divide los algoritmos numéricos en dos grandes familias:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Paso Simple */}
+                <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-cyan-300 text-sm">1. Algoritmos de Paso Simple (One-step)</h4>
+                    <span className="text-[10px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded border border-cyan-800 font-mono">
+                      Aquí entra RK2
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Para calcular <MathText math="y_{n+1}" /> requieren únicamente información correspondiente al subintervalo actual <MathText math="[x_n, x_{n+1}]" />.
+                  </p>
+                  <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
+                    <li>Utilizan valores de <MathText math="y_n" /> y de <MathText math="f(x_n, y_n)" /> en el punto actual o puntos intermedios.</li>
+                    <li><strong className="text-slate-300">No necesitan</strong> información de pasos anteriores (<MathText math="y_{n-1}, y_{n-2}" />).</li>
+                    <li><strong className="text-slate-300">Ejemplos de cátedra:</strong> Euler, Euler Mejorado, Taylor y Runge-Kutta 2.</li>
+                  </ul>
+                </div>
+
+                {/* Paso Múltiple */}
+                <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-indigo-300 text-sm">2. Algoritmos de Paso Múltiple (Multi-step)</h4>
+                    <span className="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded border border-indigo-800 font-mono">
+                      Adams-Bashforth
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Para calcular <MathText math="y_{n+1}" /> requieren información que provenga de varios subintervalos previos:
+                  </p>
+                  <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
+                    <li>Necesitan conocer previamente los valores de <MathText math="y_n, y_{n-1}, y_{n-2}, \dots" /></li>
+                    <li>Reutilizan evaluaciones anteriores para ahorrar costo computacional.</li>
+                    <li><strong className="text-slate-300">Ejemplo de cátedra:</strong> Método de Adams-Bashforth.</li>
+                  </ul>
+                </div>
+
+              </div>
+
+              {/* CARD DESTACADA: EL ROL COMO ARRANCADOR */}
+              <div className="p-4 bg-gradient-to-r from-indigo-950/70 to-slate-950 rounded-xl border border-indigo-800/80 text-xs text-slate-300 space-y-2">
+                <h4 className="font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                  El Rol Clave de Runge-Kutta como "Arrancador" de Métodos de Paso Múltiple
+                </h4>
+                <p className="leading-relaxed text-slate-300">
+                  Dado que al comienzo del problema <strong>solamente se conoce la ordenada inicial y₀</strong>, un algoritmo de paso múltiple no tiene la información previa requerida para empezar. Por lo tanto, según la cátedra, <strong className="text-cyan-300">debemos comenzar siempre el cálculo con un método de paso simple como Runge-Kutta</strong> hasta lograr juntar los primeros puntos necesarios para luego transferir el control al paso múltiple.
+                </p>
+              </div>
+
+              {/* ERRORES FRECUENTES AL PLANTEAR UN PVI */}
+              <div className="p-4 bg-slate-950/90 rounded-xl border border-slate-800 space-y-2 text-xs">
+                <h4 className="font-bold text-amber-300 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  Advertencias de Cátedra al plantear un P.V.I:
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-400">
+                  <div className="p-2 bg-slate-900 rounded border border-slate-800">
+                    <strong className="text-slate-200">1. Confundir x₀ con cero:</strong> <MathText math="x_0" /> no siempre vale 0; se obtiene explícitamente de la condición <MathText math="y(x_0)=y_0" /> (ej: en <MathText math="y(1)=1" />, <MathText math="x_0=1" />).
+                  </div>
+                  <div className="p-2 bg-slate-900 rounded border border-slate-800">
+                    <strong className="text-slate-200">2. No redondear pronto:</strong> Conservar 4 o más decimales durante las cuentas intermedias y redondear solo al final para no propagar error.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         )}
 
-        {/* TAB 3: DEFENSA */}
+        {/* ========================================================
+            TAB 3: PREGUNTAS TÍPICAS DE DEFENSA & COLOQUIO
+        ======================================================== */}
         {activeTab === 'defensa' && (
           <div className="space-y-6">
+            
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+                Preguntas Clave para el Coloquio / Examen Oral
+              </span>
               <h2 className="text-2xl font-bold text-white">
-                Preguntas Interesantes
+                Defensa Técnica frente al Tribunal Docente
               </h2>
+              <p className="text-slate-300 text-sm">
+                Respuestas exactas con el vocabulario técnico que evalúan en la cátedra de Modelos Numéricos UTN La Plata:
+              </p>
 
               <div className="space-y-4 pt-2">
                 <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
@@ -907,7 +998,7 @@ export default function App() {
                     1. ¿Por qué Runge-Kutta es de "Paso Simple" y cómo se relaciona con los métodos de "Paso Múltiple"?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Es de <strong className="text-white font-semibold">Paso Simple (One-step)</strong> porque para obtener <MathText math="y_{n+1}" /> únicamente requiere la información del intervalo actual <MathText math="[x_n, x_{n+1}]" />. Por el contrario, los métodos de <strong className="text-white font-semibold">Paso Múltiple</strong> (como Adams-Bashforth) necesitan varios puntos previos (<MathText math="y_n, y_{n-1}, y_{n-2}" />). Por esa razón, <strong className="text-cyan-300 font-semibold">siempre se debe iniciar un problema con Runge-Kutta como arrancador</strong> para generar los primeros puntos que el paso múltiple no conoce inicialmente.
+                    Es de <strong className="text-white font-semibold">Paso Simple (One-step)</strong> porque para obtener <MathText math="y_{n+1}" /> únicamente requiere la información del intervalo actual <MathText math="[x_n, x_{n+1}]" />. Por el contrario, los métodos de <strong className="text-white font-semibold">Paso Múltiple</strong> (como Adams-Bashforth) necesitan varios puntos previos (<MathText math="y_n, y_{n-1}, y_{n-2}" />). Por esa razón, <strong className="text-cyan-300 font-semibold">siempre se debe iniciar un problema con Runge-Kutta como "arrancador"</strong> para generar los primeros puntos que el paso múltiple no conoce inicialmente.
                   </p>
                 </div>
 
@@ -916,21 +1007,13 @@ export default function App() {
                     2. ¿Qué significado geométrico tiene evaluar en el punto medio?
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Representa el <strong className="text-white font-semibold">Método del Punto Medio</strong>. Al dar medio paso hasta las coordenadas intermedias <MathText math="\left(x_n + \frac{h}{2}, \; y_n + \frac{k_1}{2}\right)" /> con la pendiente inicial, se muestrea la inclinación promedio en el centro del intervalo. Esto balancea la concavidad de la curva y elimina el error de pendiente unilateral que tiene Euler clásico.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
-                  <h4 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
-                    3. ¿Qué implicancia práctica tiene que el error local sea O(h²)?
-                  </h4>
-                  <p className="text-xs text-slate-300 leading-relaxed pl-6">
-                    Significa que si se reduce el tamaño del paso a la mitad (por ejemplo de <MathText math="h = 0.1" /> a <MathText math="h = 0.05" />), el error local se reduce a la cuarta parte (<MathText math="(1/2)^2 = 1/4" />). La velocidad de convergencia cuadrática permite alcanzar gran precisión con pasos considerablemente mayores que en Euler.
+                    Representa el <strong className="text-white font-semibold">Método del Punto Medio</strong>. Al dar medio paso hasta las coordenadas intermedias <MathText math="\left(x_n + \frac{h}{2}, \; y_n + \frac{k_1}{2}\right)" /> con la pendiente inicial, se muestrea la inclinación promedio en el centro del intervalo. Esto balancea la curvatura de la función y elimina el error de pendiente unilateral que tiene Euler clásico.
                   </p>
                 </div>
               </div>
             </div>
 
+            {/* CONCLUSIÓN FINAL */}
             <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-950 border border-indigo-700/50 rounded-2xl p-5 text-xs text-slate-300 space-y-2">
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-400" /> Conclusión de Cierre para la Exposición
@@ -939,6 +1022,7 @@ export default function App() {
                 Runge-Kutta de Grado 2 representa el estándar de balance en cálculo numérico: elimina por completo la complejidad analítica de calcular derivadas parciales requeridas por Taylor de grado 2, pero conservando su misma tasa de convergencia cuadrática y estabilidad numérica.
               </p>
             </div>
+
           </div>
         )}
 
